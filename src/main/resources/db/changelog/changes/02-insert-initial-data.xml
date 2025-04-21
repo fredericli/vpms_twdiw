@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="02" author="admin">
+        <!-- 插入角色資料 -->
+        <insert tableName="role">
+            <column name="id" value="1"/>
+            <column name="name" value="ROLE_ADMIN"/>
+        </insert>
+        <insert tableName="role">
+            <column name="id" value="2"/>
+            <column name="name" value="ROLE_USER"/>
+        </insert>
+        
+        <!-- 插入管理員帳號 -->
+        <insert tableName="app_user">
+            <column name="id" value="1"/>
+            <column name="username" value="admin"/>
+            <!-- 密碼: admin12345678 (bcrypt加密) -->
+            <column name="password" value="$2a$10$iCa.i7XuBXQCYeYj3omYX.sVkkD0Arbeg.yAV6Lxnyh8S3u6Tf63q"/>
+            <column name="email" value="admin@example.com"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="created_date" valueDate="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <!-- 將管理員與角色關聯 -->
+        <insert tableName="user_role">
+            <column name="user_id" value="1"/>
+            <column name="role_id" value="1"/>
+        </insert>
+        
+        <!-- 插入預設收件人 -->
+        <insert tableName="recipient">
+            <column name="id" value="1"/>
+            <column name="name" value="系統管理員"/>
+            <column name="email" value="admin@example.com"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="created_date" valueDate="CURRENT_TIMESTAMP"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog> 

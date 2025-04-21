@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訪客報告 - 訪客登記系統</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">訪客登記系統</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">儀表板</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/recipients">收件人管理</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown mr-2">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="walletDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-wallet"></i> 數位憑證皮夾
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="walletDropdown">
+                            <a class="dropdown-item" href="https://www.wallet.gov.tw/applyAccount.html" target="_blank">
+                                <i class="fas fa-user-plus"></i> 沙盒帳號申請
+                            </a>
+                            <a class="dropdown-item" href="https://issuer-sandbox.wallet.gov.tw/" target="_blank">
+                                <i class="fas fa-id-card"></i> 發證端沙盒系統
+                            </a>
+                            <a class="dropdown-item" href="https://verifier-sandbox.wallet.gov.tw/" target="_blank">
+                                <i class="fas fa-check-circle"></i> 驗證端沙盒系統
+                            </a>
+                        </div>
+                    </div>
+                    <a href="/" class="btn btn-outline-light mr-2">
+                        <i class="fas fa-home"></i> 前往首頁
+                    </a>
+                    <a href="https://github.com/fredericli/vpms_twdiw" target="_blank" class="btn btn-outline-light mr-2">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <form th:action="@{/logout}" method="post" class="my-2 my-lg-0">
+                        <button class="btn btn-danger my-2 my-sm-0" type="submit">登出</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">訪客日報表 - <span th:text="${#temporals.format(date, 'yyyy-MM-dd')}">2023-01-01</span></h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4 offset-md-4">
+                                <form th:action="@{/admin/report}" method="get" class="form-inline justify-content-center">
+                                    <div class="form-group mr-2">
+                                        <label for="date" class="mr-2">選擇日期：</label>
+                                        <input type="date" class="form-control" id="date" name="date" th:value="${#temporals.format(date, 'yyyy-MM-dd')}" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">產生報告</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="report-container bg-light p-4 border rounded">
+                            <pre th:text="${report}" style="white-space: pre-wrap;">報告內容將顯示在這裡...</pre>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <a th:href="@{/admin/dashboard}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> 返回儀表板
+                            </a>
+                            <button class="btn btn-success ml-2" onclick="window.print()">
+                                <i class="fas fa-print"></i> 列印報告
+                            </button>
+                            <a th:href="@{/admin/report/export(date=${#temporals.format(date, 'yyyy-MM-dd')})}" class="btn btn-info ml-2" target="_blank">
+                                <i class="fas fa-file-export"></i> 匯出報告
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html> 

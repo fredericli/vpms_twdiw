@@ -1,0 +1,94 @@
+# 指定Docker Compose文件格式版本，3.8是較新的版本，支持更多功能
+version: '3.8'
+
+# 定義所有服務，每個服務代表一個容器
+services:
+  # 訪客管理系統應用服務 - Spring Boot應用程序
+  vpms-app:
+    # 從當前目錄的Dockerfile構建映像，而不是使用預建映像
+    build: .
+    # 指定容器名稱，方便識別和管理
+    container_name: vpms-app
+    # 設置容器自動重啟策略：always表示容器退出時總是重啟
+    restart: always
+    # 端口映射：將容器內部的8080端口映射到主機的8080端口
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    # 依賴關係：確保vpms-db服務先啟動
+    depends_on:
+      - vpms-db
+    # 網絡配置：將容器連接到vpms-network網絡
+    networks:
+      - vpms-network
+    # 環境變量設置：為Spring Boot應用程序設置必要的配置
+    environment:
+      # 數據庫連接URL：指向名為vpms-db的PostgreSQL容器
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://vpms-db:5432/vpms}
+      # 數據庫用戶名：與PostgreSQL容器中的POSTGRES_USER一致
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-postgres}
+      # 數據庫密碼：與PostgreSQL容器中的POSTGRES_PASSWORD一致
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-postgres}
+      # Hibernate自動建表策略：none表示不自動修改表結構
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      # 啟用Liquibase數據庫版本管理
+      - SPRING_LIQUIBASE_ENABLED=${SPRING_LIQUIBASE_ENABLED:-true}
+      # 日誌文件存儲路徑：設置為容器內的/logs目錄
+      - LOGGING_FILE_PATH=${LOGGING_FILE_PATH:-/logs}
+      # 日誌文件名稱
+      - LOGGING_FILE_NAME=${LOGGING_FILE_NAME:-vpms.log}
+      # 服務器端口設置：與ports映射保持一致
+      - SERVER_PORT=8080
+      
+      # 數位憑證皮夾驗證端服務設定
+      - TWDIW_API_BASE_URL=${TWDIW_API_BASE_URL:-https://verifier-sandbox.wallet.gov.tw/api}
+      - TWDIW_API_KEY=${TWDIW_API_KEY}
+      - TWDIW_DEFAULT_REF=${TWDIW_DEFAULT_REF:-00000000_visitorregister_vp_20250418}
+      
+      # 數位憑證皮夾發行端服務設定
+      - TWDIW_ISSUER_API_BASE_URL=${TWDIW_ISSUER_API_BASE_URL:-https://issuer-sandbox.wallet.gov.tw}
+      - TWDIW_ISSUER_API_ACCESS_TOKEN=${TWDIW_ISSUER_API_ACCESS_TOKEN}
+      - TWDIW_ISSUER_VISITOR_CARD_VC_ID=${TWDIW_ISSUER_VISITOR_CARD_VC_ID:-373552}
+      - TWDIW_ISSUER_VISITOR_CARD_VC_CID=${TWDIW_ISSUER_VISITOR_CARD_VC_CID:-00000000_visitorregistrationcard20250418}
+      
+      # 郵件伺服器設定
+      - SPRING_MAIL_HOST=${SPRING_MAIL_HOST}
+      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+    # 日誌掛載：將本地logs目錄掛載到容器的/logs目錄，實現日誌持久化
+    volumes:
+      # 確保日誌目錄存在且有正確權限
+      - ./logs:/logs
+
+  # PostgreSQL 數據庫服務 - 存儲應用程序數據
+  vpms-db:
+    # 使用官方PostgreSQL 14映像，無需自行構建
+    image: postgres:14
+    # 指定容器名稱，方便識別和管理
+    container_name: vpms-db
+    # 設置容器自動重啟策略：always表示容器退出時總是重啟
+    restart: always
+    # 端口映射：將容器內部的5432端口映射到主機的5432端口，用於外部工具連接
+    ports:
+      - "5432:5432"
+    # 網絡配置：將容器連接到vpms-network網絡
+    networks:
+      - vpms-network
+    # 環境變量設置：配置PostgreSQL數據庫
+    environment:
+      # 數據庫名稱：創建一個名為vpms的數據庫
+      - POSTGRES_DB=${POSTGRES_DB:-vpms}
+      # 數據庫超級用戶名
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      # 數據庫超級用戶密碼
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+    # 卷掛載：使用主機目錄掛載到容器的/var/lib/postgresql/data目錄
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+# 定義自定義網絡，用於服務間通信
+networks:
+  # 網絡名稱：vpms-network
+  vpms-network:
+    # 網絡驅動類型：bridge是Docker默認的網絡驅動，用於同一主機上的容器通信
+    driver: bridge 

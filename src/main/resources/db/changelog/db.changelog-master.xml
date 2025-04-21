@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <!-- 包含所有的變更檔案 -->
+    <include file="classpath:db/changelog/changes/01-create-tables.xml"/>
+    <include file="classpath:db/changelog/changes/02-insert-initial-data.xml"/>
+    <include file="classpath:db/changelog/changes/03-add-user-login-attempts.xml"/>
+    <include file="classpath:db/changelog/changes/04-add-remember-me-table.xml"/>
+    <include file="classpath:db/changelog/changes/05-allow-null-department.xml"/>
+</databaseChangeLog> 

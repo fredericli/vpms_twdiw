@@ -1,0 +1,120 @@
+spring:
+  # 添加允許循環依賴的設定
+  main:
+    allow-circular-references: true
+    
+  # 資料庫配置
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    # 資料庫連線池設定
+    hikari:
+      maximum-pool-size: ${SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE:20}
+      minimum-idle: ${SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE:10}
+      idle-timeout: ${SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT:180000}
+      connection-timeout: ${SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT:60000}
+      max-lifetime: ${SPRING_DATASOURCE_HIKARI_MAX_LIFETIME:1800000}
+      auto-commit: ${SPRING_DATASOURCE_HIKARI_AUTO_COMMIT:true}
+      pool-name: ${SPRING_DATASOURCE_HIKARI_POOL_NAME:VPMSHikariCP}
+      connection-test-query: ${SPRING_DATASOURCE_HIKARI_CONNECTION_TEST_QUERY:SELECT 1}
+      validation-timeout: ${SPRING_DATASOURCE_HIKARI_VALIDATION_TIMEOUT:5000}
+      leak-detection-threshold: ${SPRING_DATASOURCE_HIKARI_LEAK_DETECTION_THRESHOLD:30000}
+  
+  # JPA & Hibernate 配置
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:none}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          time_zone: ${SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_TIME_ZONE:Asia/Taipei}
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  
+  # Liquibase 配置
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: ${SPRING_LIQUIBASE_ENABLED:true}
+  
+  # 郵件配置
+  mail:
+    host: ${SPRING_MAIL_HOST}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: "*"
+            checkserveridentity: false
+
+# Server 配置
+server:
+  port: ${SERVER_PORT:8080}
+  address: 0.0.0.0
+  servlet:
+    context-path: /vpms
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto
+
+# 日誌配置
+logging:
+  file:
+    path: ${LOGGING_FILE_PATH}
+    name: ${LOGGING_FILE_NAME}
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    example:
+      vpms: ${LOGGING_LEVEL_VPMS:DEBUG}
+    org:
+      hibernate:
+        SQL: ${LOGGING_LEVEL_HIBERNATE_SQL:DEBUG}
+      springframework:
+        web: ${LOGGING_LEVEL_SPRING_WEB:INFO}
+        security: ${LOGGING_LEVEL_SPRING_SECURITY:INFO}
+        boot:
+          autoconfigure: ${LOGGING_LEVEL_SPRING_BOOT_AUTOCONFIGURE:INFO}
+        orm:
+          jpa: ${LOGGING_LEVEL_SPRING_ORM_JPA:INFO}
+    ch:
+      qos:
+        logback: ${LOGGING_LEVEL_LOGBACK:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  logback:
+    rollingpolicy:
+      max-file-size: ${LOGGING_LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE:10MB}
+      max-history: ${LOGGING_LOGBACK_ROLLINGPOLICY_MAX_HISTORY:30}
+      total-size-cap: ${LOGGING_LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP:1GB}
+      clean-history-on-start: ${LOGGING_LOGBACK_ROLLINGPOLICY_CLEAN_HISTORY_ON_START:false}
+      file-name-pattern: ${LOGGING_LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN:${LOGGING_FILE_PATH}/${LOGGING_FILE_NAME}.%d{yyyy-MM-dd}.%i.gz}
+
+# 數位憑證皮夾驗證端服務配置
+twdiw:
+  verify:
+    # 驗證端服務配置
+    api:
+      base-url: ${TWDIW_API_BASE_URL}
+      access-token: ${TWDIW_API_KEY}
+    # 訪客領卡 VP 模板設定
+    card:  
+      default-ref: ${TWDIW_DEFAULT_REF}
+  # 發行端服務配置
+  issuer:
+    api:
+      base-url: ${TWDIW_ISSUER_API_BASE_URL}
+      access-token: ${TWDIW_ISSUER_API_ACCESS_TOKEN}
+    # 訪客領卡 VC 模板設定
+    card:
+      vc-id: ${TWDIW_ISSUER_VISITOR_CARD_VC_ID}
+      vc-cid: ${TWDIW_ISSUER_VISITOR_CARD_VC_CID}

@@ -1,0 +1,105 @@
+/**
+ * 全局樣式
+ */
+body {
+    font-family: 'Microsoft JhengHei', 'PingFang TC', 'Heiti TC', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer {
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+    background-color: #f0f0f0;
+    text-align: center;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+/**
+ * QR碼頁面特定樣式
+ */
+.qrcode-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.header-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header-logo img {
+    max-height: 60px;
+}
+
+/* 裝置特定樣式 */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .qrcode-container {
+        padding: 15px;
+        max-width: 100%;
+    }
+    
+    .qrcode-img {
+        width: 200px;
+        height: 200px;
+        margin: 15px auto;
+    }
+    
+    /* 觸控裝置最佳化 */
+    button, 
+    a.btn, 
+    input[type=button], 
+    input[type=submit] {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+    
+    /* 調整間距以適應小螢幕 */
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .mt-5 {
+        margin-top: 2rem !important;
+    }
+    
+    .mb-4 {
+        margin-bottom: 1rem !important;
+    }
+    
+    /* 表單元素優化 */
+    .form-control {
+        font-size: 16px; /* 防止iOS縮放 */
+    }
+}
+
+/* 超小螢幕（如iPhone SE）調整 */
+@media (max-width: 375px) {
+    .qrcode-img {
+        width: 180px;
+        height: 180px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+} 

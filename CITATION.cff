@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "如果您使用此軟體，請引用它。"
+authors:
+  - family-names: "Li"
+    given-names: "Frederic"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+title: "VPMS - Visitor Pass Management System"
+version: 1.0.0
+date-released: 2024-05-01
+url: "https://github.com/fredericli/vpms_twdiw"
+repository-code: "https://github.com/fredericli/vpms_twdiw"
+license: MIT
+abstract: "VPMS 是一個基於 Spring Boot 的訪客管理系統，提供訪客登記、數位訪客證發放和驗證等功能，整合了數位憑證皮夾服務。"
+keywords:
+  - visitor-management
+  - digital-credential
+  - spring-boot
+  - java
+references:
+  - type: software
+    authors:
+      - family-names: "Pivotal"
+        given-names: "Software"
+    title: "Spring Boot"
+    url: "https://spring.io/projects/spring-boot"
+  - type: software
+    authors:
+      - family-names: "PostgreSQL"
+        given-names: "Global Development Group"
+    title: "PostgreSQL"
+    url: "https://www.postgresql.org/" 
