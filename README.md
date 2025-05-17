@@ -160,4 +160,4 @@ src/main/java/example/vpms/
 
 ---
 
-© 2024 [fredericli](https://github.com/fredericli)
+© 2024 [fredericli](frederic62.li@gmail.com)
