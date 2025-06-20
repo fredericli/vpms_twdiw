@@ -31,10 +31,10 @@ public class TWDIWVerifyConfig {
     }
     
     public String getQrcodeUrl() {
-        return baseUrl + "/oidvp/qr-code";
+        return baseUrl + "/api/oidvp/qrcode";
     }
     
     public String getVerifyResultUrl() {
-        return baseUrl + "/oidvp/result";
+        return baseUrl + "/api/oidvp/result";
     }
 } 

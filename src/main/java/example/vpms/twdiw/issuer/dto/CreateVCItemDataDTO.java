@@ -2,40 +2,26 @@ package example.vpms.twdiw.issuer.dto;
 
 import java.util.List;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * 建立 VC 項目資料的 DTO
  */
 public class CreateVCItemDataDTO {
     
-    @NotNull
-    private Integer vcId;
-    
-    @NotBlank
-    private String vcCid;
-    
+    private String vcUid;
+
     @NotEmpty
     private List<CreateVCItemDataField> fields;
-    
-    public Integer getVcId() {
-        return vcId;
+
+    public String getVcUid() {
+        return vcUid;
     }
-    
-    public void setVcId(Integer vcId) {
-        this.vcId = vcId;
+
+    public void setVcUid(String vcUid) {
+        this.vcUid = vcUid;
     }
-    
-    public String getVcCid() {
-        return vcCid;
-    }
-    
-    public void setVcCid(String vcCid) {
-        this.vcCid = vcCid;
-    }
-    
+
     public List<CreateVCItemDataField> getFields() {
         return fields;
     }

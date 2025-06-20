@@ -2,7 +2,7 @@ spring:
   # 添加允許循環依賴的設定
   main:
     allow-circular-references: true
-    
+
   # 資料庫配置
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -21,7 +21,7 @@ spring:
       connection-test-query: ${SPRING_DATASOURCE_HIKARI_CONNECTION_TEST_QUERY:SELECT 1}
       validation-timeout: ${SPRING_DATASOURCE_HIKARI_VALIDATION_TIMEOUT:5000}
       leak-detection-threshold: ${SPRING_DATASOURCE_HIKARI_LEAK_DETECTION_THRESHOLD:30000}
-  
+
   # JPA & Hibernate 配置
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -34,34 +34,40 @@ spring:
         jdbc:
           time_zone: ${SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_TIME_ZONE:Asia/Taipei}
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  
+
   # Liquibase 配置
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: ${SPRING_LIQUIBASE_ENABLED:true}
-  
+
   # 郵件配置
   mail:
-    host: ${SPRING_MAIL_HOST}
-    port: ${SPRING_MAIL_PORT:587}
-    username: ${SPRING_MAIL_USERNAME}
-    password: ${SPRING_MAIL_PASSWORD}
+    host: ${EMAIL_HOST}
+    port: ${EMAIL_PORT}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
-            enable: true
-          ssl:
-            trust: "*"
-            checkserveridentity: false
+            enable: false
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    default-encoding: UTF-8
+    sender: ${EMAIL_SENDER:noreply@wallet.gov.tw}
+    batch:
+      size: ${EMAIL_BATCH_SIZE:50}
+      delay: ${EMAIL_DELAY:5000}  # in milliseconds
+      max-concurrent-jobs: ${MAX_CONCURRENT_JOBS:3}  # 最大並行執行的郵件任務數
 
 # Server 配置
 server:
   port: ${SERVER_PORT:8080}
   address: 0.0.0.0
   servlet:
-    context-path: /vpms
+    context-path: ${SERVER_CONTEXT_PATH:/vpms/}
   tomcat:
     remote-ip-header: x-forwarded-for
     protocol-header: x-forwarded-proto
@@ -69,8 +75,8 @@ server:
 # 日誌配置
 logging:
   file:
-    path: ${LOGGING_FILE_PATH}
-    name: ${LOGGING_FILE_NAME}
+    path: ${LOGGING_FILE_PATH:/Users/fredericli/app/vpms/logs}
+    name: ${LOGGING_FILE_NAME:vpms.log}
   level:
     root: ${LOGGING_LEVEL_ROOT:INFO}
     example:
@@ -78,9 +84,15 @@ logging:
     org:
       hibernate:
         SQL: ${LOGGING_LEVEL_HIBERNATE_SQL:DEBUG}
+        type:
+          descriptor:
+            sql:
+              BasicBinder: ${LOGGING_LEVEL_HIBERNATE_BASIC_BINDER:TRACE}
       springframework:
         web: ${LOGGING_LEVEL_SPRING_WEB:INFO}
-        security: ${LOGGING_LEVEL_SPRING_SECURITY:INFO}
+        security:
+          authentication: ${LOGGING_LEVEL_SPRING_SECURITY_AUTH:DEBUG}
+          web: ${LOGGING_LEVEL_SPRING_SECURITY_WEB:DEBUG}
         boot:
           autoconfigure: ${LOGGING_LEVEL_SPRING_BOOT_AUTOCONFIGURE:INFO}
         orm:
@@ -98,6 +110,9 @@ logging:
       total-size-cap: ${LOGGING_LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP:1GB}
       clean-history-on-start: ${LOGGING_LOGBACK_ROLLINGPOLICY_CLEAN_HISTORY_ON_START:false}
       file-name-pattern: ${LOGGING_LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN:${LOGGING_FILE_PATH}/${LOGGING_FILE_NAME}.%d{yyyy-MM-dd}.%i.gz}
+    async:
+      queue-size: ${LOGGING_LOGBACK_ASYNC_QUEUE_SIZE:512}
+      discarding-threshold: ${LOGGING_LOGBACK_ASYNC_DISCARDING_THRESHOLD:0}
 
 # 數位憑證皮夾驗證端服務配置
 twdiw:
@@ -107,8 +122,11 @@ twdiw:
       base-url: ${TWDIW_API_BASE_URL}
       access-token: ${TWDIW_API_KEY}
     # 訪客領卡 VP 模板設定
-    card:  
+    card:
       default-ref: ${TWDIW_DEFAULT_REF}
+    # 歡迎訊息設定
+    welcome:
+      message: ${TWDIW_WELCOME_MESSAGE:${SERVER_CONTEXT_PATH}}
   # 發行端服務配置
   issuer:
     api:
@@ -116,5 +134,4 @@ twdiw:
       access-token: ${TWDIW_ISSUER_API_ACCESS_TOKEN}
     # 訪客領卡 VC 模板設定
     card:
-      vc-id: ${TWDIW_ISSUER_VISITOR_CARD_VC_ID}
-      vc-cid: ${TWDIW_ISSUER_VISITOR_CARD_VC_CID}
+      vcUid: ${TWDIW_ISSUER_VISITOR_CARD_VCUID}

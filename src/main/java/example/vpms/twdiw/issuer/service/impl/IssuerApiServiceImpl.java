@@ -43,7 +43,7 @@ public class IssuerApiServiceImpl implements IssuerApiService {
     
     @Override
     public VCItemDataDTO setVCItemData(CreateVCItemDataDTO createVCItemDataDTO) {
-        String url = baseUrl + "/api/vc-item-data";
+        String url = baseUrl + "/api/qrcode/data";
         
         HttpEntity<CreateVCItemDataDTO> requestEntity = new HttpEntity<>(createVCItemDataDTO, createHeaders());
         
