@@ -80,13 +80,13 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="keyword">關鍵字：</label>
-                                        <input type="text" class="form-control" id="keyword" th:field="*{keyword}" placeholder="公司名稱、姓名、電話等">
+                                        <input type="text" class="form-control" id="keyword" th:field="*{keyword}" placeholder="公司或部門、姓名、電話等">
                                     </div>
                                 </div>
                             </div>
                             <div class="text-center mt-3">
                                 <button type="submit" class="btn btn-primary">重新搜尋</button>
-                                <a th:href="@{/admin/dashboard}" class="btn btn-secondary ml-2">返回儀表板</a>
+                                <a th:href="@{/vpms/admin/dashboard}" class="btn btn-secondary ml-2">返回儀表板</a>
                             </div>
                         </form>
                     </div>
@@ -108,7 +108,7 @@
                                     <tr>
                                         <th>日期</th>
                                         <th>簽到時間</th>
-                                        <th>公司名稱</th>
+                                        <th>公司或部門</th>
                                         <th>姓名</th>
                                         <th>電子郵件</th>
                                         <th>操作</th>

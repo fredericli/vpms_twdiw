@@ -63,7 +63,8 @@ public class SecurityConfig {
                 // 首頁、登入頁和資源不需要認證
                 .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/webjars/**", 
                                  "/api/oidvp/**", "/api/visitor/card", "/api/visitor/card/status**", 
-                                 "/api/visitor/card/scan-status/**", "/sounds/**").permitAll()
+                                 "/api/visitor/card/scan-status/**", "/sounds/**",
+                                 "/car-rent/qrcode/**", "/CarRent.html").permitAll()
                 // 管理頁面需要認證
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

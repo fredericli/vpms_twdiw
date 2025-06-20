@@ -33,7 +33,7 @@ const FormValidationModule = {
     validateRegistrationForm: function(event) {
         let isValid = true;
         
-        // 公司名稱驗證
+        // 公司或部門驗證
         isValid = FormValidationModule.validateCompanyName() && isValid;
         
         // 部門驗證
@@ -51,12 +51,12 @@ const FormValidationModule = {
     },
     
     /**
-     * 驗證公司名稱
+     * 驗證公司或部門
      */
     validateCompanyName: function() {
         const companyNameInput = document.getElementById('companyName');
         if (companyNameInput && companyNameInput.value.trim() === '') {
-            UIHelper.showError(companyNameInput, '請輸入公司名稱');
+            UIHelper.showError(companyNameInput, '請輸入公司或部門');
             return false;
         } else if (companyNameInput) {
             UIHelper.clearError(companyNameInput);
