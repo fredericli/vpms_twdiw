@@ -11,4 +11,8 @@
     <include file="classpath:db/changelog/changes/03-add-user-login-attempts.xml"/>
     <include file="classpath:db/changelog/changes/04-add-remember-me-table.xml"/>
     <include file="classpath:db/changelog/changes/05-allow-null-department.xml"/>
+    <include file="changes/20240321_create_vc_apply_table.xml" relativeToChangelogFile="true"/>
+    <include file="changes/20240321_add_credential_to_vc_apply.xml" relativeToChangelogFile="true"/>
+    <include file="changes/20240321_add_cid_and_transactionid_to_vc_apply.xml" relativeToChangelogFile="true"/>
+    <include file="changes/20240321_remove_transactionid_from_vc_apply.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog> 

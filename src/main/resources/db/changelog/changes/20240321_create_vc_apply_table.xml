@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="20240321-1" author="vpms">
+        <createTable tableName="vc_apply">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_number" type="varchar(10)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="cellphone" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="company_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_title" type="varchar(255)"/>
+            <column name="vc_id" type="int"/>
+            <column name="vc_cid" type="varchar(255)"/>
+            <column name="transaction_id" type="varchar(255)"/>
+            <column name="qr_code" type="text"/>
+            <column name="deep_link" type="text"/>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="datetime"/>
+        </createTable>
+
+        <!-- 建立索引 -->
+        <createIndex tableName="vc_apply" indexName="idx_vc_apply_transaction_id">
+            <column name="transaction_id"/>
+        </createIndex>
+        <createIndex tableName="vc_apply" indexName="idx_vc_apply_id_number">
+            <column name="id_number"/>
+        </createIndex>
+        <createIndex tableName="vc_apply" indexName="idx_vc_apply_cellphone">
+            <column name="cellphone"/>
+        </createIndex>
+        <createIndex tableName="vc_apply" indexName="idx_vc_apply_email">
+            <column name="email"/>
+        </createIndex>
+        <createIndex tableName="vc_apply" indexName="idx_vc_apply_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="vc_apply" indexName="idx_vc_apply_created_at">
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog> 
