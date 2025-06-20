@@ -39,6 +39,8 @@ public class VCItemDataDTO {
     
     private String scheduleRevokeMessage;
     
+    private String credential;
+    
     private VCItemDTO vcItem;
     
     public Integer getId() {
@@ -175,6 +177,14 @@ public class VCItemDataDTO {
     
     public void setScheduleRevokeMessage(String scheduleRevokeMessage) {
         this.scheduleRevokeMessage = scheduleRevokeMessage;
+    }
+    
+    public String getCredential() {
+        return credential;
+    }
+    
+    public void setCredential(String credential) {
+        this.credential = credential;
     }
     
     public VCItemDTO getVcItem() {

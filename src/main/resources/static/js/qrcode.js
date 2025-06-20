@@ -17,15 +17,17 @@ const QRCodeModule = {
         refreshButton: null,
         countdownText: null,
         countdownProgress: null,
-        appOpenButton: null
+        appOpenButton: null,
+        welcomeMessage: null
     },
     
     // 預設參數
     config: {
         defaultRef: '00000000_demo_01', // 初始預設值，稍後將從後端獲取
         qrCodeExpireMinutes: 5, // QR碼有效時間（分鐘）
-        resultDisplaySeconds: 3, // 掃描結果顯示時間（秒）
-        contextPath: '' // 應用程式的context path
+        resultDisplaySeconds: 5, // 掃描結果顯示時間（秒）
+        contextPath: '', // 應用程式的context path
+        welcomeMessage: '歡迎來林次長室！123' // 預設歡迎訊息
     },
     
     // 狀態
@@ -46,6 +48,7 @@ const QRCodeModule = {
         this.getContextPath();
         this.bindEvents();
         this.fetchDefaultRef();
+        this.fetchWelcomeMessage();
     },
     
     /**
@@ -58,6 +61,7 @@ const QRCodeModule = {
         this.elements.countdownText = document.getElementById('countdown-text');
         this.elements.countdownProgress = document.getElementById('countdown-progress');
         this.elements.appOpenButton = document.getElementById('app-open-btn');
+        this.elements.welcomeMessage = document.getElementById('welcome-message');
     },
     
     /**
@@ -152,6 +156,29 @@ const QRCodeModule = {
                 console.error('獲取默認證件類型失敗:', error);
                 // 出錯時使用本地預設值並繼續生成QR碼
                 this.generateQRCode();
+            });
+    },
+    
+    /**
+     * 從後端獲取歡迎訊息
+     */
+    fetchWelcomeMessage: function() {
+        APIModule.fetchWelcomeMessage()
+            .then(data => {
+                if (data && data.message) {
+                    console.log('從後端獲取的歡迎訊息:', data.message);
+                    this.config.welcomeMessage = data.message;
+                    if (this.elements.welcomeMessage) {
+                        this.elements.welcomeMessage.textContent = data.message;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('獲取歡迎訊息失敗:', error);
+                // 使用預設歡迎訊息
+                if (this.elements.welcomeMessage) {
+                    this.elements.welcomeMessage.textContent = this.config.welcomeMessage;
+                }
             });
     },
     
@@ -448,6 +475,8 @@ const APIModule = {
         const url = QRCodeModule.config.contextPath + 'api/oidvp/qr-code?ref=' + encodeURIComponent(ref) + 
                     '&transaction_id=' + encodeURIComponent(transactionId);
         
+        console.log('QR碼請求URL:', url);  // 新增日誌
+        
         return fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -465,6 +494,19 @@ const APIModule = {
                     encodeURIComponent(transactionId);
         
         return fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP狀態: ${response.status}`);
+                }
+                return response.json();
+            });
+    },
+    
+    /**
+     * 從後端獲取歡迎訊息
+     */
+    fetchWelcomeMessage: function() {
+        return fetch(QRCodeModule.config.contextPath + 'api/oidvp/welcome-message')
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP狀態: ${response.status}`);
@@ -800,7 +842,7 @@ const UIHelper = {
         }
         
         // 添加感謝訊息
-        resultHTML += '<p class="mt-3"><strong>感謝您的使用！</strong></p>';
+        resultHTML += '<p class="mt-3"><strong>已認證，' + QRCodeModule.config.welcomeMessage + '</strong></p>';
         
         resultElement.innerHTML = resultHTML;
         
@@ -838,7 +880,6 @@ const UIHelper = {
         if (resultData.data && Array.isArray(resultData.data)) {
             resultData.data.forEach((credential, index) => {
                 html += `<div class="credential-data mt-3">`;
-                html += `<p><strong>憑證類型 ${index + 1}:</strong> ${credential.credentialType || '未知'}</p>`;
                 
                 if (credential.claims && Array.isArray(credential.claims)) {
                     html += '<ul class="text-start">';

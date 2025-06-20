@@ -1,5 +1,6 @@
 package example.vpms.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,8 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import example.vpms.dto.VisitorCardDto;
+import example.vpms.model.VCApply;
+import example.vpms.repository.VCApplyRepository;
 import example.vpms.twdiw.issuer.dto.CreateVCItemDataDTO;
 import example.vpms.twdiw.issuer.dto.CreateVCItemDataField;
 import example.vpms.twdiw.issuer.dto.VCItemDataDTO;
@@ -24,16 +28,15 @@ public class VisitorCardService {
     private static final Logger logger = LoggerFactory.getLogger(VisitorCardService.class);
     
     private final IssuerApiService issuerApiService;
+    private final VCApplyRepository vcApplyRepository;
     
-    @Value("${twdiw.issuer.card.vc-id}")
-    private Integer vcId;
-    
-    @Value("${twdiw.issuer.card.vc-cid}")
-    private String vcCid;
+    @Value("${twdiw.issuer.card.vcUid}")
+    private String vcUid;
     
     @Autowired
-    public VisitorCardService(IssuerApiService issuerApiService) {
+    public VisitorCardService(IssuerApiService issuerApiService, VCApplyRepository vcApplyRepository) {
         this.issuerApiService = issuerApiService;
+        this.vcApplyRepository = vcApplyRepository;
     }
     
     /**
@@ -42,6 +45,7 @@ public class VisitorCardService {
      * @param visitorCardDto 訪客領卡資料
      * @return VC 項目資料的回應
      */
+    @Transactional
     public VCItemDataDTO processVisitorCard(VisitorCardDto visitorCardDto) {
         logger.info("處理訪客領卡請求: {}", visitorCardDto);
         
@@ -54,11 +58,40 @@ public class VisitorCardService {
             logger.info("VC 發行成功，卡片 ID: {}, 二維碼: {}", 
                     vcItemDataDTO.getId(), 
                     vcItemDataDTO.getQrCode() != null ? "已生成" : "未生成");
+            
+            // 儲存申請資料
+            saveVCApply(visitorCardDto, vcItemDataDTO);
+            
             return vcItemDataDTO;
         } catch (Exception e) {
             logger.error("VC 發行失敗", e);
             throw e;
         }
+    }
+    
+    /**
+     * 儲存訪客領卡申請資料
+     * 
+     * @param visitorCardDto 訪客領卡資料
+     * @param vcItemDataDTO VC 項目資料
+     */
+    private void saveVCApply(VisitorCardDto visitorCardDto, VCItemDataDTO vcItemDataDTO) {
+        VCApply vcApply = new VCApply();
+        vcApply.setName(visitorCardDto.getName());
+        vcApply.setCellphone(visitorCardDto.getCellphone());
+        vcApply.setEmail(visitorCardDto.getEmail());
+        vcApply.setCompanyName(visitorCardDto.getCompanyName());
+        vcApply.setJobTitle(visitorCardDto.getJobTitle());
+        vcApply.setVcCid(vcUid);
+        vcApply.setTransactionId(vcItemDataDTO.getTransactionId());
+        vcApply.setQrCode(vcItemDataDTO.getQrCode());
+        vcApply.setDeepLink(vcItemDataDTO.getDeepLink());
+        vcApply.setCredential(vcItemDataDTO.getCredential());
+        vcApply.setStatus("PENDING");
+        vcApply.setCreatedAt(LocalDateTime.now());
+        
+        vcApplyRepository.save(vcApply);
+        logger.info("訪客領卡申請資料已儲存，ID: {}", vcApply.getId());
     }
     
     /**
@@ -68,42 +101,43 @@ public class VisitorCardService {
      * @return CreateVCItemDataDTO 請求物件
      */
     private CreateVCItemDataDTO createVCItemData(VisitorCardDto visitorCardDto) {
-        CreateVCItemDataDTO dto = new CreateVCItemDataDTO();
-        dto.setVcId(vcId);
-        dto.setVcCid(vcCid);
-        
+        CreateVCItemDataDTO createVCItemDataDTO = new CreateVCItemDataDTO();
+
+        createVCItemDataDTO.setVcUid(vcUid);
         List<CreateVCItemDataField> fields = new ArrayList<>();
-        
-        // 添加公司名稱欄位 - 處理空值
+
+        // 公司或部門
         CreateVCItemDataField companyField = new CreateVCItemDataField();
-        companyField.setType("CUSTOM");
-        companyField.setCname("公司名稱");
         companyField.setEname("company");
-        companyField.setContent(visitorCardDto.getCompanyName() != null ? visitorCardDto.getCompanyName() : "-");
+        companyField.setContent(visitorCardDto.getCompanyName());
         fields.add(companyField);
         
-        // 添加姓名欄位 - 處理空值，保留空格
+        // 姓名
         CreateVCItemDataField nameField = new CreateVCItemDataField();
-        nameField.setType("BASIC");
-        nameField.setCname("姓名");
         nameField.setEname("name");
-        // 如果名字為null或空字串則顯示-，否則保留原始輸入（包含可能的空格）
-        String nameValue = (visitorCardDto.getName() == null || visitorCardDto.getName().isEmpty()) 
-                          ? "-" 
-                          : visitorCardDto.getName();
-        nameField.setContent(nameValue);
+        nameField.setContent(visitorCardDto.getName());
         fields.add(nameField);
         
-        // 添加電子郵件欄位
+        // 電子郵件
         CreateVCItemDataField emailField = new CreateVCItemDataField();
-        emailField.setType("CUSTOM");
-        emailField.setCname("電子郵件");
         emailField.setEname("email");
         emailField.setContent(visitorCardDto.getEmail());
         fields.add(emailField);
         
-        dto.setFields(fields);
+        // 職稱
+        CreateVCItemDataField jobTitleField = new CreateVCItemDataField();
+        jobTitleField.setEname("job_title");
+        jobTitleField.setContent(visitorCardDto.getJobTitle());
+        fields.add(jobTitleField);        
         
-        return dto;
+        // 手機號碼
+        CreateVCItemDataField cellphoneField = new CreateVCItemDataField();
+        cellphoneField.setEname("cellphone");
+        cellphoneField.setContent(visitorCardDto.getCellphone());
+        fields.add(cellphoneField);
+        
+        createVCItemDataDTO.setFields(fields);
+        
+        return createVCItemDataDTO;
     }
 } 

@@ -1,11 +1,12 @@
 # 多階段構建：階段1 - 使用官方Maven鏡像進行構建
-FROM maven:3.8-eclipse-temurin-17 AS build
+FROM maven:3.8.6-amazoncorretto-17 AS build
 
 # 設置工作目錄
 WORKDIR /app
 
 # 複製Maven配置文件
 COPY pom.xml .
+COPY settings.xml /root/.m2/settings.xml
 
 # 複製源代碼
 COPY src ./src
@@ -14,7 +15,7 @@ COPY src ./src
 RUN mvn package -DskipTests
 
 # 多階段構建：階段2 - 使用精簡的JRE運行環境
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-jammy
 
 # 工作目錄
 WORKDIR /app
@@ -56,7 +57,7 @@ RUN mkdir -p /logs && \
 EXPOSE 8080
 
 # 創建啟動腳本
-RUN echo '#!/bin/sh\nchronyd -d &\njava -jar app.jar' > /app/start.sh && \
+RUN printf '#!/bin/sh\nchronyd -d &\njava -jar app.jar\n' > /app/start.sh && \
     chmod +x /app/start.sh
 
 # 使用啟動腳本啟動應用程序

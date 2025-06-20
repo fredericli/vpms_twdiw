@@ -67,27 +67,42 @@ public class TWDIWVerifyService {
             
             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url)
                     .queryParam("ref", ref)
-                    .queryParam("transaction_id", transactionId);
+                    .queryParam("transactionId", transactionId);
             
             String fullUrl = uriBuilder.toUriString();
             logger.debug("完整請求URL: {}", fullUrl);
             
-            ResponseEntity<QrcodeResponseDto> response = restTemplate.exchange(
+            // 先嘗試以字串形式獲取回應
+            ResponseEntity<String> stringResponse = restTemplate.exchange(
                     fullUrl,
                     HttpMethod.GET,
                     entity,
-                    QrcodeResponseDto.class);
+                    String.class);
             
-            logger.info("QR碼產生HTTP結果: {}", response.getStatusCode());
-            
-            QrcodeResponseDto responseDto = response.getBody();
-            if (responseDto != null) {
-                logger.debug("收到回應: code={}, message={}", responseDto.getCode(), responseDto.getMessage());
-            } else {
-                logger.warn("收到空的回應內容");
+            logger.info("HTTP CODE：{}", stringResponse.getStatusCode());
+                    // 檢查回應內容類型
+            String contentType = stringResponse.getHeaders().getFirst("Content-Type");
+            if (contentType != null && contentType.contains("text/html")) {
+                logger.error("API返回HTML錯誤頁面: {}", stringResponse.getBody());
+                throw new RestClientException("API服務暫時不可用，請稍後再試");
             }
             
-            return responseDto;
+            // 如果內容類型是JSON，則解析為QrcodeResponseDto
+            try {
+                QrcodeResponseDto responseDto = objectMapper.readValue(stringResponse.getBody(), QrcodeResponseDto.class);
+                logger.info("QR碼產生HTTP結果: {}", stringResponse.getStatusCode());
+                
+                if (responseDto != null) {
+                    logger.debug("收到回應: code={}, message={}", responseDto.getCode(), responseDto.getMessage());
+                } else {
+                    logger.warn("收到空的回應內容");
+                }
+                
+                return responseDto;
+            } catch (Exception e) {
+                logger.error("解析API回應失敗: {}", e.getMessage());
+                throw new RestClientException("解析API回應失敗: " + e.getMessage());
+            }
         } catch (RestClientException e) {
             logger.error("呼叫數位憑證皮夾API失敗: {}", e.getMessage(), e);
             throw e;
@@ -121,7 +136,7 @@ public class TWDIWVerifyService {
         HttpEntity<?> entity = new HttpEntity<>(headers);
         
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(config.getVerifyResultUrl())
-                .queryParam("transaction_id", transactionId);
+                .queryParam("transactionId", transactionId);
         
         if (responseCode != null && !responseCode.isEmpty()) {
             uriBuilder.queryParam("response_code", responseCode);
@@ -153,6 +168,7 @@ public class TWDIWVerifyService {
      */
     private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
+        logger.info("API Key: {}", config.getAccessToken());
         headers.set("Access-Token", config.getAccessToken());
         return headers;
     }

@@ -5,6 +5,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,20 @@ public class VPController {
     
     @Autowired
     private TWDIWVerifyConfig verifyConfig;
+    
+    @Value("${twdiw.verify.welcome.message}")
+    private String welcomeMessage;
+    
+    /**
+     * 獲取歡迎訊息
+     * 
+     * @return 歡迎訊息
+     */
+    @GetMapping("/welcome-message")
+    public ResponseEntity<?> getWelcomeMessage() {
+        logger.info("接收到歡迎訊息查詢請求");
+        return ResponseEntity.ok(Map.of("message", welcomeMessage));
+    }
     
     /**
      * 產生授權請求QR碼

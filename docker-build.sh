@@ -60,11 +60,11 @@ docker buildx create --name multiarch --use
 
 # 步驟 3: 構建多平台映像
 echo -e "\n${GREEN}步驟 3: 構建多平台映像...${NC}"
-echo -e "${YELLOW}支援平台: linux/amd64,linux/arm64 ${NC}"
+echo -e "${YELLOW}支援平台: linux/amd64 ${NC}"
 
 # 構建多平台映像並直接載入到本地 Docker
 docker buildx build \
-    --platform linux/amd64,linux/arm64 \
+    --platform linux/amd64 \
     -t $FULL_IMAGE_NAME \
     --load \
     .
@@ -89,7 +89,7 @@ fi
 # 步驟 5: 顯示構建結果
 echo -e "\n${GREEN}步驟 5: 顯示構建結果...${NC}"
 echo -e "${GREEN}映像名稱: $FULL_IMAGE_NAME ${NC}"
-echo -e "${GREEN}支援平台: linux/amd64,linux/arm64 ${NC}"
+echo -e "${GREEN}支援平台: linux/amd64 ${NC}"
 echo -e "${GREEN}輸出檔案: $OUTPUT_DIR/$TAR_FILENAME ${NC}"
 
 # 計算並顯示總耗時

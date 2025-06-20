@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="20240321-3" author="vpms">
+        <addColumn tableName="vc_apply">
+            <column name="cid" type="char(36)" remarks="VC 卡片唯一識別碼">
+                <constraints nullable="true"/>
+            </column>
+            <column name="transactionid" type="varchar(255)" remarks="交易識別碼">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- 建立索引 -->
+        <createIndex tableName="vc_apply" indexName="idx_vc_apply_cid">
+            <column name="cid"/>
+        </createIndex>
+        <createIndex tableName="vc_apply" indexName="idx_vc_apply_transactionid">
+            <column name="transactionid"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog> 

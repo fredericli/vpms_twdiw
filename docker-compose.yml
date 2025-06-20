@@ -5,9 +5,7 @@ version: '3.8'
 services:
   # 訪客管理系統應用服務 - Spring Boot應用程序
   vpms-app:
-    # 從當前目錄的Dockerfile構建映像，而不是使用預建映像
-    build: .
-    # 指定容器名稱，方便識別和管理
+    image: vpms:1.0.0
     container_name: vpms-app
     # 設置容器自動重啟策略：always表示容器退出時總是重啟
     restart: always
@@ -42,13 +40,12 @@ services:
       # 數位憑證皮夾驗證端服務設定
       - TWDIW_API_BASE_URL=${TWDIW_API_BASE_URL:-https://verifier-sandbox.wallet.gov.tw/api}
       - TWDIW_API_KEY=${TWDIW_API_KEY}
-      - TWDIW_DEFAULT_REF=${TWDIW_DEFAULT_REF:-00000000_visitorregister_vp_20250418}
+      - TWDIW_DEFAULT_REF=${TWDIW_DEFAULT_REF:-00000000_vpms_20250605}
       
       # 數位憑證皮夾發行端服務設定
       - TWDIW_ISSUER_API_BASE_URL=${TWDIW_ISSUER_API_BASE_URL:-https://issuer-sandbox.wallet.gov.tw}
       - TWDIW_ISSUER_API_ACCESS_TOKEN=${TWDIW_ISSUER_API_ACCESS_TOKEN}
-      - TWDIW_ISSUER_VISITOR_CARD_VC_ID=${TWDIW_ISSUER_VISITOR_CARD_VC_ID:-373552}
-      - TWDIW_ISSUER_VISITOR_CARD_VC_CID=${TWDIW_ISSUER_VISITOR_CARD_VC_CID:-00000000_visitorregistrationcard20250418}
+      - TWDIW_ISSUER_VISITOR_CARD_VCUID=${TWDIW_ISSUER_VISITOR_CARD_VCUID:-00000000_vpms_20250605}
       
       # 郵件伺服器設定
       - SPRING_MAIL_HOST=${SPRING_MAIL_HOST}

@@ -7,13 +7,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class QrcodeResponseDto {
     
-    @JsonProperty("transaction_id")
+    @JsonProperty("transactionId")
     private String transactionId;
     
-    @JsonProperty("qrcode_image")
+    @JsonProperty("qrcodeImage")
     private String qrcodeImage;
     
-    @JsonProperty("auth_uri")
+    @JsonProperty("authUri")
     private String authUri;
     
     // 為相容性保留的舊欄位
